@@ -1,5 +1,3 @@
-import { useState, useEffect } from "react";
-import Buttons from "../generic/Buttons";
 import ElapsedTime from "../generic/ElapsedTime";
 import convertSeconds from "../../utils/helpers";
 
@@ -9,71 +7,27 @@ import convertSeconds from "../../utils/helpers";
 // and the number of min:sec for each lap.
 //------------------------------------------
 
-const XY = ({xValue, yValue}) => {
+const titleStyle = {
+  textAlign: "center",
+  paddingBottom: 3,
+}
 
-    const [seconds, setSeconds] = useState(0);
-    const [x,setXValue] = useState(1);
-    const [isActive, setActive] = useState(false);
-    const [isPaused, setPaused] = useState(false);
-    const [isDone, setDone] = useState(false);
-  
-    useEffect(() => {
+const durationStyle = {
+  textAlign: "center",
+  horzontalAlign: "center",
+  fontSize: 18,
+}
 
-    let intervalID = null;
-  
-    if (isActive && (isPaused === false) && (isDone === false)) {
-      intervalID = setInterval(() => {
-        setSeconds(seconds + 1);
-        if ((seconds) >= yValue) {
-            setXValue(x + 1)
-            if (x >= xValue) {
-                setDone(true);
-                setSeconds(yValue);
-                setXValue(xValue);
-            } else {
-            setSeconds(0);
-            }
-        }
-      }, 1000);
-    } else {
-      clearInterval(intervalID);
-    }
-    return () => {
-      clearInterval(intervalID);
-    };
-  }, [isActive, isPaused, isDone, seconds, x, xValue, yValue]);
+const XY = ({ rounds, work, progress }) => {
 
-  function doStart() {
-    setActive(true);
-    setDone(false);
-  }
-  function doPauseResume() {
-    setPaused(!isPaused);
-  }
-
-  function doFastForward() {
-    setSeconds(yValue);
-    setXValue(xValue);
-    setActive(false);
-    setDone(true);
-    setPaused(false);
-  }
-
-  function doReset() {
-    setSeconds(0);
-    setXValue(1);
-    setActive(false);
-    setPaused(false);
-    setDone(false);
-  }
-
-  let xyText = 'X - ' + xValue + ' Y - ' + convertSeconds({seconds: yValue});
+  const currRd = Math.trunc(progress / work) + 1; // find the current round
+  const currSec = progress % work;                // find the num of sec elapsed in curr rd
 
   return <div>
-    <ElapsedTime label={xyText} />
-    <ElapsedTime rounds={x} seconds={seconds} />
-    <Buttons isActive = {isActive} isDone = {isDone} isPaused={isPaused} doStart={doStart} doPauseResume={doPauseResume} doFastForward={doFastForward} doReset={doReset} />
-  </div>
+    <div style={titleStyle}>XY Timer</div>
+    <ElapsedTime label={`Rd:  ${currRd} Work: `} seconds={currSec} />
+    <div style={durationStyle}>{`Rds: ${rounds} Work: ${convertSeconds({ seconds: work })}`}</div>  
+    </div>
 }
 
 export default XY;

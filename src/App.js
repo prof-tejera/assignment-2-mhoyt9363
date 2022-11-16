@@ -1,9 +1,10 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import styled from "styled-components";
-
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { PATHS } from './utils/constants';
+import NewTimer from './views/NewTimerView';
 import DocumentationView from "./views/DocumentationView";
 import TimersView from "./views/TimersView";
+import AppProvider from './components/generic/Context';
 
 const Container = styled.div`
   background: #f0f6fb;
@@ -12,26 +13,28 @@ const Container = styled.div`
 `;
 
 const liStyle = {
-  padding: 2,
+  padding: 5,
+  margin: 2,
   display: "inline",
   border: "1px solid black",
-  height: 30,
   textAlign: "center",
-  fontSize: 17,
-  backgroundColor: "Linen",
+  fontSize: 13,
+  backgroundColor: "lightblue",
 
 }
-
 const Nav = () => {
 
   return (
     <nav >
-      <ul>
+      <ul >        
         <li style = {liStyle}>
-          <Link to="/">Timers</Link>
+          <Link to={PATHS.NEWTIMER}>Add Timer</Link>
         </li>
         <li style = {liStyle}>
-          <Link to="/docs">Documentation</Link>
+          <Link to={PATHS.TIMERS}>Workout</Link>
+        </li>
+        <li style = {liStyle}>
+          <Link to={PATHS.DOCUMENTS}>Documentation</Link>
         </li>
       </ul>
     </nav>
@@ -40,15 +43,18 @@ const Nav = () => {
 
 const App = () => {
   return (
-    <Container>
-      <Router>
-        <Nav />
-        <Routes>
-          <Route path="/docs" element={<DocumentationView />} />
-          <Route path="/" element={<TimersView />} />
-        </Routes>
-      </Router>
-    </Container>
+    <Router>
+      <AppProvider>
+        <Container>
+          <Nav />
+          <Routes>
+             <Route path={PATHS.DOCUMENTS} element={<DocumentationView />} />
+             <Route path={PATHS.TIMERS} element={<TimersView />} />
+             <Route path={PATHS.NEWTIMER} element={<NewTimer />}/>
+          </Routes>
+        </Container>
+      </AppProvider>
+    </Router>
   );
 };
 

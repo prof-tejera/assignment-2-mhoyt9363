@@ -1,85 +1,44 @@
-import { useState, useEffect } from "react";
-import Buttons from "../generic/Buttons";
 import ElapsedTime from "../generic/ElapsedTime";
 import convertSeconds from "../../utils/helpers";
 
 //------------------------------------------
-// This tabata timer will time work effort
+// This tabata timer will track work effort
 // then rest time for a specified number
 // of rounds.
 //------------------------------------------
+const titleStyle = {
+    textAlign: "center",
+    paddingBottom: 3,
+  }
+  
+  const durationStyle = {
+    textAlign: "center",
+    horzontalAlign: "center",
+    fontSize: 18,
+  }
 
-const Tabata = ({tabataRounds, tabataWork, tabataRest}) => {
+const Tabata = ({ rounds, work, rest, progress }) => {
 
-    const [rounds,setRounds] = useState(1);
-    const [work,setWork] = useState(0);
-    const [rest,setRest] = useState(0);
-    const [isActive, setActive] = useState(false);
-    const [isPaused, setPaused] = useState(false);
-    const [isDone, setDone] = useState(false);
-    
-    useEffect(() => {
+    const currRd = Math.trunc(progress / (work + rest)) + 1;  // find the current round
+    const currSec = progress % (work + rest);                 // find the num secs prog in this rd
+    let currWk = 0;
+    let currRest = 0;
 
-    let intervalID = null;
-    
-    if (isActive && (isPaused === false) && (isDone === false)) {
-        intervalID = setInterval(() => {
-        if (work < tabataWork)
-            setWork(work + 1)
-        else if (rest < tabataRest)
-            setRest(rest + 1)
-        else if (rounds < tabataRounds) {
-            setRounds(rounds + 1)
-            setWork(0);
-            setRest(0);
-        }
-        else {
-            setDone(true);
-        }
-            
-
-        }, 1000);
-    } else {
-        clearInterval(intervalID);
+    // determine split between work and rest
+    if (currSec > work) {                                     
+        currWk = work;
+        currRest = currSec - work;
     }
-    return () => {
-        clearInterval(intervalID);
-    };
-    }, [isActive, isPaused, isDone, work, rest, rounds, tabataWork, tabataRest, tabataRounds]);
-
-    function doStart() {
-    setActive(true);
-    setDone(false);
+    else {
+        currWk = currSec;
+        currRest = 0;
     }
-    function doPauseResume() {
-    setPaused(!isPaused);
-    }
-
-    function doFastForward() {
-    setWork(tabataWork);
-    setRest(tabataRest);
-    setRounds(tabataRounds)
-    setActive(false);
-    setDone(true);
-    setPaused(false);
-    }
-
-    function doReset() {
-    setWork(0);
-    setRest(0);
-    setRounds(1)
-    setActive(false);
-    setPaused(false);
-    setDone(false);
-    }
-
-    let tabataText = 'Rounds - ' + tabataRounds + ' Work - ' + convertSeconds({seconds: tabataWork}) + 'Rest - ' + convertSeconds({seconds: tabataRest});
-
+  
     return <div>
-    <ElapsedTime label={tabataText} />
-    <ElapsedTime rounds={rounds} seconds={work} seconds2={rest} />
-    <Buttons isActive = {isActive} isDone = {isDone} isPaused={isPaused} doStart={doStart} doPauseResume={doPauseResume} doFastForward={doFastForward} doReset={doReset} />
-    </div>
-}
+      <div style={titleStyle}>Tabata</div>
+      <ElapsedTime label= {`Rds: ${currRd} Work: ${convertSeconds({ seconds: currWk })} Rest: ${convertSeconds({ seconds: currRest })}`}/>
+      <div style={durationStyle}>{`Rds: ${rounds} Work: ${convertSeconds({ seconds: work })} Rest: ${convertSeconds({ seconds: rest })}`}</div>  
+      </div>
+  }
     
 export default Tabata;

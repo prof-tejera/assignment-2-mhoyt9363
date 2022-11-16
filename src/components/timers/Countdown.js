@@ -1,63 +1,31 @@
 
-import { useState, useEffect } from "react";
 import Buttons from "../generic/Buttons";
 import ElapsedTime from "../generic/ElapsedTime";
+import convertSeconds from "../../utils/helpers";
 
 //------------------------------------------
 // This timer starts from the specified
 // number of seconds and counts down to 0.
 //------------------------------------------
 
-const Countdown = ({ countDownStart }) => {
-  const [seconds, setSeconds] = useState(countDownStart);
-  const [isActive, setActive] = useState(false);
-  const [isPaused, setPaused] = useState(false);
-  const [isDone, setDone] = useState(false);
+const titleStyle = {
+  textAlign: "center",
+  paddingBottom: 3,
+}
 
-  useEffect(() => {
-    let intervalID = null;
-  
-    if (isActive && (isPaused === false) && (isDone === false)) {
-      intervalID = setInterval(() => {
-        setSeconds(seconds - 1);
-        if ((seconds - 1) <= 0) {
-            setDone(true);
-        }
-      }, 1000);
-    } else {
-      clearInterval(intervalID);
-    }
-    return () => {
-      clearInterval(intervalID);
-    };
-  }, [isActive, isPaused, isDone, seconds]);
+const durationStyle = {
+  textAlign: "center",
+  horzontalAlign: "center",
+  fontSize: 18,
+}
 
-  function doStart() {
-    setActive(true);
-    setDone(false);
-  }
-  function doPauseResume() {
-    setPaused(!isPaused);
-  }
-
-  function doFastForward() {
-    setSeconds(0);
-    setActive(false);
-    setDone(true);
-    setPaused(false);
-  }
-
-  function doReset() {
-    setSeconds(countDownStart);
-    setActive(false);
-    setPaused(false);
-    setDone(false);
-  }
+const Countdown = ({ duration, progress })=> {
 
     return (
       <div>
-        <ElapsedTime label="" seconds={seconds} />
-        <Buttons isActive = {isActive} isDone = {isDone} isPaused={isPaused} doStart={doStart} doPauseResume={doPauseResume} doFastForward={doFastForward} doReset={doReset} />
+        <div style={titleStyle}>Countdown</div>
+        <ElapsedTime label="Progress: " seconds={progress} />
+        <div style={durationStyle}>Duration: {convertSeconds({ seconds: duration })}</div>
       </div>
     );
   };
