@@ -1,5 +1,4 @@
 import convertSeconds from "../../utils/helpers";
-import Buttons from "../generic/Buttons";
 import ElapsedTime from "../generic/ElapsedTime";
 
 //----------------------------------------------
