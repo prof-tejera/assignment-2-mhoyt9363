@@ -1,9 +1,9 @@
 import React from "react";
 import styled from "styled-components";
-
 import DocumentComponent from "../components/documentation/DocumentComponent";
 
 import Loading from "../components/generic/Loading";
+import ElapsedTime from "../components/generic/ElapsedTime";
 
 const Container = styled.div`
   display: flex;
@@ -24,6 +24,46 @@ const Documentation = () => {
       <div>
         <Title>Documentation</Title>
         <DocumentComponent
+          title="Displaying Time"
+          component={<ElapsedTime seconds={65} />}
+          propDocs={[
+            {
+              prop: "seconds",
+              description: "The # of seconds which is converted to min:sec",
+              type: "string",
+              defaultValue: 0,
+            }
+          ]}
+        />
+        <DocumentComponent
+          title="3rd Party Hook - useInterval"
+          propDocs={[
+            {
+              prop: "callback",
+              description: "Function to execute when interval completed",
+              type: "function",
+              defaultValue: "none",
+            },
+            {
+              prop: "delay",
+              description: "The time before executing callback in setInterval",
+              type: "number",
+              defaultValue: "0 ms",
+            },
+          ]}
+        />
+          <DocumentComponent
+          title="Displaying a Timer"
+          propDocs={[
+            {
+              prop: "index",
+              description: "The index of the timer in the queue",
+              type: "integer",
+              defaultValue: "0",
+            },
+          ]}
+        />
+        <DocumentComponent
           title="Loading spinner "
           component={<Loading />}
           propDocs={[
@@ -32,24 +72,6 @@ const Documentation = () => {
               description: "Changes the size of the loading spinner",
               type: "string",
               defaultValue: "medium",
-            },
-            {
-              prop: "ElapsedTime",
-              description: "Displays the seconds elapsed so far",
-              type: "component",
-              defaultValue: "00:00",
-            },
-            {
-              prop: "Buttons",
-              description: "Displays the buttons required for a timer",
-              type: "<button>",
-              defaultValue: "Start, Pause/Res, FF, Reset",
-            },
-            {
-              prop: "convertSeconds",
-              description: "A helper that converts seconds to min:sec",
-              type: "string",
-              defaultValue: "00:00",
             },
           ]}
         />

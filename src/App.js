@@ -49,8 +49,8 @@ const App = () => {
           <Nav />
           <Routes>
             <Route path={PATHS.DOCUMENTS} element={<DocumentationView />} />
-            <Route path={PATHS.TIMERS} element={<TimersView />} />
             <Route path={PATHS.NEWTIMER} element={<NewTimer />}/>
+            <Route path={PATHS.TIMERS} element={<TimersView />} />
           </Routes>
         </Container>
       </AppProvider>
