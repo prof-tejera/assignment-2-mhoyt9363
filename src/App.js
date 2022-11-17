@@ -43,7 +43,7 @@ const Nav = () => {
 
 const App = () => {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/assignment-2-mhoyt9363">
       <AppProvider>
         <Container>
           <Nav />
