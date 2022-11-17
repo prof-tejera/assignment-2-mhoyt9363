@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
 import { PATHS } from './utils/constants';
 import NewTimer from './views/NewTimerView';
 import DocumentationView from "./views/DocumentationView";
@@ -43,18 +43,18 @@ const Nav = () => {
 
 const App = () => {
   return (
-    <Router>
+    <BrowserRouter>
       <AppProvider>
         <Container>
           <Nav />
           <Routes>
-             <Route path={PATHS.DOCUMENTS} element={<DocumentationView />} />
-             <Route path={PATHS.TIMERS} element={<TimersView />} />
-             <Route path={PATHS.NEWTIMER} element={<NewTimer />}/>
+            <Route path={PATHS.DOCUMENTS} element={<DocumentationView />} />
+            <Route path={PATHS.TIMERS} element={<TimersView />} />
+            <Route path={PATHS.NEWTIMER} element={<NewTimer />}/>
           </Routes>
         </Container>
       </AppProvider>
-    </Router>
+    </BrowserRouter>
   );
 };
 
