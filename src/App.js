@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import {
-  BrowserRouter,
+  HashRouter,
   Link,
   Route,
   Routes,
@@ -66,7 +66,7 @@ const ErrorFallback = ({ error, resetErrorBoundary }) => {
 const App = () => {
 
   return (
-    <BrowserRouter basename={PATHS.BASENAME}>
+    <HashRouter basename={PATHS.BASENAME}>
       <AppProvider>
         <Container>
           <Nav />
@@ -80,7 +80,7 @@ const App = () => {
           </Routes>
         </Container>
       </AppProvider>
-    </BrowserRouter>
+    </HashRouter>
   );
 };
 

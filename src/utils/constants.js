@@ -2,7 +2,7 @@
 // Stores constants like the paths for our app
 //--------------------------------------------------
 export const PATHS = {
-    BASENAME: '/assignment-2-mhoyt9363',
+    BASENAME: '/',
     HOME: '/',
     TIMERS: '/wkout',
     DOCUMENTS: '/docs',
