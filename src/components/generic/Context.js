@@ -1,30 +1,107 @@
-import React, { useState } from 'react';
-import { useInterval } from './customHooks';
+import React, { useEffect, useState } from 'react';
+import getTotTime from '../../utils/getTotTime';
+import { useInterval } from './useInterval';
+import usePersistedState from './usePersistedState';
+import createHistoryItem from '../../utils/createHistoryItem';
+import GetUrlQuery from './GetUrlQuery';
+import updateURLQuery from './updateURLQuery';
+import { useSearchParams } from 'react-router-dom';
 
 export const AppContext = React.createContext({});
 
 const AppProvider = ({ children }) => {
-  const [queue, setQueue] = useState([]);
-  const [paused, setPaused] = useState(true);
-  const [time, setTime] = useState(0);
 
+  const [holdQ, setHoldQ] = usePersistedState('queue', []);
+  const [paused, setPaused] = usePersistedState('paused', true);
+  const [time, setTime] = usePersistedState('time', 0);
+  const [complete, setComplete] = usePersistedState('complete', false);
+  const [wkoutHistory, setWkoutHistory] = usePersistedState('hist', []);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const [queue, setQueue] = useState( ( GetUrlQuery() === [] ) ? holdQ : GetUrlQuery() ); 
+
+  const [totTime, setTotTime] = usePersistedState('totTime', getTotTime({queueToTotal: queue})); 
+
+  // update the hold q (persisted state) when the queue changes
+  useEffect(() => {
+
+    setHoldQ(queue);
+    setSearchParams({q: updateURLQuery(queue)},{replace: true});
+
+  }, [ queue, setHoldQ, setSearchParams, searchParams ]);
+  
   useInterval(() => {
+    // confirm total time of workout
+    setTotTime(getTotTime({queueToTotal: queue}));
+
     if (paused) return;
+
+    // increase the global timer (seconds)
     setTime(t => t + 1);
+
+    // if the workout is done, stop the timer and indicate wkout comp
+    if (time === totTime) {
+      setComplete(true);
+      setPaused(!paused);
+      setTime(totTime);
+      setWkoutHistory(() => [...wkoutHistory, createHistoryItem({queueToTansform: queue})]);
+    }
   }, 1000);
 
   return (
     <AppContext.Provider
       value={{
         time,
+        queue,
+        setQueue,
+        wkoutHistory,
+        // url,
+        // setUrl,
+        totTime,
+        setTotTime,
         paused,
-        setPaused,
+        togglePaused: () => setPaused(!paused),
+        complete,
+        setComplete,
         reset: () => {setTime(0);
-                      setPaused(true)
+                      setPaused(true);
+                      setComplete(false);
                     },
-        addItem: item => setQueue(q => [...q, item]),
-        
-        removeItem: index => setQueue(queue.filter((q, i) => i !== index)),
+        addItem: item =>  {
+          setQueue(q => [...q, item]);
+          setHoldQ(q => [...q, item]);
+          },
+        updateItem: (item, index) => {
+          const updatedQueue = queue.map((q, i) => index === i ? item : q);
+          setQueue(updatedQueue);
+          setHoldQ(updatedQueue);
+        },
+        removeItem: index => {
+          setQueue(queue.filter((q, i) => i !== index));
+          setHoldQ(queue.filter((q, i) => i !== index));
+          },
+        moveTimerUp: index => {
+          if (index === 0)
+            return
+          else{
+            let tmp = [...queue];
+            const holdTimer = tmp.splice(index, 1)[0];
+            tmp.splice(index-1, 0, holdTimer);
+            setQueue(tmp);
+            setHoldQ(tmp);
+          }
+        },
+        moveTimerDown: index => {
+          if (index === (queue.length - 1))
+            return
+          else{
+            let tmp = [...queue];
+            const holdTimer = tmp.splice(index, 1)[0];
+            tmp.splice(index + 1, 0, holdTimer);
+            setQueue(tmp);
+            setHoldQ(tmp);
+          }
+        },
         fastForward: index => {
           setTime(queue.reduce((acc, curr, i) => {
             if (i <= index) {
@@ -35,7 +112,6 @@ const AppProvider = ({ children }) => {
           }, 0)
           );
         },
-        queue,
       }}
     >
       {children}

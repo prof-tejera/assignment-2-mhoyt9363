@@ -1,8 +1,15 @@
+import PropTypes from 'prop-types';
+
 //--------------------------------------------------
 // Converts seconds to a display friendly format
 // for minutes and seconds
 //--------------------------------------------------
 const convertSeconds = ({ seconds }) => {
+
+    convertSeconds.propTypes = {
+        seconds: PropTypes.number,
+      };
+
     const min = Math.trunc(seconds/60);
     const sec = seconds % 60;
     let time = '';

@@ -1,21 +1,17 @@
 import { useContext, useState } from "react";
+import { useParams } from "react-router-dom";
 import { AppContext } from "../components/generic/Context";
 import styled from "styled-components";
 
 //------------------------------------------
-// This component will display a page that
-// gets user input so we can
-// add a new timer to the queue. The
-// options will vary depending on the timer
-// type (XY, Stopwatch, Tabata or Countdown)
-// they select.
+// This component will 
 //------------------------------------------
 
-const NewTimerContainer = styled.div`
+const EditTimerContainer = styled.div`
   border: 1px solid black;
   padding: 20px;
   margin: 10px;
-  height: 250px;
+  height: 400px;
   width: 250px;
   font-size: 1rem;
   text-align: center;
@@ -26,20 +22,21 @@ const RadioStyle = styled.div`
   display: inline;
 `;
 
-const NewTimerView = () => {
-  const { addItem } = useContext(AppContext);
+const InnerEditTimerView = ({ index, timer }) => {
+  const { updateItem } = useContext(AppContext);
 
   //keep the state of user input fields until they're done
-  const [timerType, setTimerType] = useState("");
-  const [work, setWork] = useState(10);
-  const [rounds, setRounds] = useState(3);
-  const [rest, setRest] = useState(5);
-  const [notes, setNotes] = useState("");
-
-  let timerInputs = "";
+  const [timerType, setTimerType] = useState(timer.type);
+  const [work, setWork] = useState(timer.work);
+  const [rounds, setRounds] = useState(timer.rounds);
+  const [rest, setRest] = useState(timer.rest);
+  const [notes, setNotes] = useState(timer.notes);
 
   // setup the input field options between a) work seconds b) num of rounds
   // and c) rest seconds
+
+  let timerInputs = "";
+
   const workInput = (
     <div>
       <label for="work">Work (sec 1-999): </label>
@@ -49,7 +46,7 @@ const NewTimerView = () => {
         name="work"
         min={1}
         max={999}
-        defaultValue={10}
+        value={work}
         onChange={(e) => setWork(parseInt(e.target.value))}
       />
       <div>
@@ -60,6 +57,7 @@ const NewTimerView = () => {
           rows="2"
           cols="30"
           maxLength={99}
+          value={notes}
           onChange={(e) => setNotes(e.target.value)}
         />
       </div>
@@ -74,7 +72,7 @@ const NewTimerView = () => {
         name="work"
         min={1}
         max={999}
-        defaultValue={10}
+        value={work}
         onChange={(e) => setWork(parseInt(e.target.value))}
       />
       <div>
@@ -85,7 +83,7 @@ const NewTimerView = () => {
           name="rd"
           min="1"
           max="99"
-          defaultValue={3}
+          value={rounds}
           onChange={(e) => setRounds(parseInt(e.target.value))}
         />
       </div>
@@ -97,6 +95,7 @@ const NewTimerView = () => {
           rows="2"
           cols="30"
           maxLength={99}
+          value={notes}
           onChange={(e) => setNotes(e.target.value)}
         />
       </div>
@@ -112,7 +111,7 @@ const NewTimerView = () => {
           name="work"
           min="1"
           max="999"
-          defaultValue={10}
+          value={work}
           onChange={(e) => setWork(parseInt(e.target.value))}
         />
       </div>
@@ -124,7 +123,7 @@ const NewTimerView = () => {
           name="rest"
           min="1"
           max="999"
-          defaultValue={5}
+          value={rest}
           onChange={(e) => setRest(parseInt(e.target.value))}
         />
       </div>
@@ -136,7 +135,7 @@ const NewTimerView = () => {
           name="rd"
           min="1"
           max="99"
-          defaultValue={3}
+          value={rounds}
           onChange={(e) => setRounds(parseInt(e.target.value))}
         />
       </div>
@@ -148,6 +147,7 @@ const NewTimerView = () => {
           rows="2"
           cols="30"
           maxLength={99}
+          value={notes}
           onChange={(e) => setNotes(e.target.value)}
         />
       </div>
@@ -161,10 +161,11 @@ const NewTimerView = () => {
     timerInputs = roundInput;
   } else if (timerType === "Tabata") {
     timerInputs = restInput;
-  } else timerInputs = <div>Please start selection</div>;
+  } else timerInputs = <div>Please start editing</div>;
 
   return (
-    <NewTimerContainer>
+    <EditTimerContainer>
+      <h4>Edit Timer</h4>
       <fieldset>
         <legend> What type? </legend>
 
@@ -174,6 +175,7 @@ const NewTimerView = () => {
             id="Stopwatch"
             name="newtimer"
             value="Stopwatch"
+            checked={timerType === "Stopwatch"}
             onChange={(e) => setTimerType(e.target.value)}
           />
           <label for="Stopwatch">Stopwatch</label>
@@ -183,6 +185,7 @@ const NewTimerView = () => {
             id="Countdown"
             name="newtimer"
             value="Countdown"
+            checked={timerType === "Countdown"}
             onChange={(e) => setTimerType(e.target.value)}
           />
           <label for="Countdown">Countdown</label>
@@ -192,6 +195,7 @@ const NewTimerView = () => {
             id="XY"
             name="newtimer"
             value="XY"
+            checked={timerType === "XY"}
             onChange={(e) => setTimerType(e.target.value)}
           />
           <label for="XY">XY</label>
@@ -201,6 +205,7 @@ const NewTimerView = () => {
             id="Tabata"
             name="newtimer"
             value="Tabata"
+            checked={timerType === "Tabata"}
             onChange={(e) => setTimerType(e.target.value)}
           />
           <label for="Tabata">Tabata</label>
@@ -242,14 +247,25 @@ const NewTimerView = () => {
             };
           }
 
-          addItem(item);
-          setTimerType("");
+          
+          updateItem(item, Number(index));
         }}
       >
-        Add
+        Save
       </button>
-    </NewTimerContainer>
+    </EditTimerContainer>
   );
 };
 
-export default NewTimerView;
+const EditTimerView = () => {
+  const { index } = useParams();
+  const { queue } = useContext(AppContext);
+
+  const timerToEdit = queue[index];
+  return (
+  <div>
+  <InnerEditTimerView index = {index} timer = {timerToEdit}/>
+  </div>
+  );
+}
+export default EditTimerView;

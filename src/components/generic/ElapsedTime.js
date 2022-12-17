@@ -1,4 +1,5 @@
-import convertSeconds from "../../utils/helpers";
+import convertSeconds from "../../utils/convertSeconds";
+import PropTypes from 'prop-types';
 
 //------------------------------------------
 // This component will take a label, two
@@ -13,9 +14,19 @@ const defaultStyle = {
   fontSize: 18,
 }
 
+const ElapsedTime = ({ style, label, seconds, label2, seconds2, label3, rounds }) => {
 
-
-const ElapsedTime = ({ style={}, label, seconds, label2, seconds2, label3, rounds}) => {
+  ElapsedTime.propTypes = {
+    item: PropTypes.object,
+    index: PropTypes.number,
+    style:  PropTypes.object,
+    label: PropTypes.string,
+    seconds: PropTypes.oneOfType([PropTypes.number, PropTypes.bool]), 
+    label2: PropTypes.string, 
+    seconds2: PropTypes.oneOfType([PropTypes.number, PropTypes.bool]), 
+    label3: PropTypes.string, 
+    rounds: PropTypes.number,
+  }
 
   return (
     <div style={{...defaultStyle, ...style}}>

@@ -1,7 +1,8 @@
 import React, {useContext} from "react";
 import { AppContext } from "../components/generic/Context";
-import Timer from "../components/generic/timerSequence";
+import TimerPrep from "../components/timers/TimerPrep";
 import styled from "styled-components";
+import ProgressBar from "../components/timers/ProgressBar";
 
 //------------------------------------------
 // This view is the page that will display
@@ -12,38 +13,49 @@ const Container = styled.div`
   margin: 30px;
   display: inline;
   padding: 10px;
+  width: fit-content;
 `;
 
-const buttonStyle = {
-  padding: 5,
-  margin: 2,
-  display: "inline",
-  border: "1px solid black",
-  textAlign: "center",
-  fontSize: 13,
-  backgroundColor: "lightgray",
+const ButtonStyle = styled.button`
+padding: 5px;
+margin: 2px;
+display: inline;
+border: 1px solid black;
+text-align: center;
+font-size: 13px;
+background-color: lightgray;
+`;
 
-}
+
 const TimersView = () => {
-  const { queue, paused, setPaused, reset } = useContext(AppContext);
+  const { queue, time, totTime, paused, togglePaused, reset } = useContext(AppContext);
+
+  if (queue.length === 0) {
+    return <Container>Add a timer to start building a workout!</Container>
+  }
 
   return (
     <div>
-    <Container >
-      <button style={buttonStyle}
-        onClick={() => {
-          setPaused(!paused);
-        }}
-      >
-        {paused ? 'Run' : 'Pause'}
-      </button>
-      <button style={buttonStyle} onClick={reset}>Reset</button>
+      <Container >
+        <ButtonStyle 
+          onClick={() => {
+            togglePaused();
+          }}
+        >
+          {paused ? 'Run' : 'Pause'}
+        </ButtonStyle>
+        <ButtonStyle onClick={reset}>Reset</ButtonStyle>
+
+        <ProgressBar finalTotTime={totTime} time = {time} />
+
       </Container>
+
       <div>
         {queue.map((t, i) => (
-          <Timer key={i} index={i} duration={t.duration} />
+          <TimerPrep key={i} index={i} duration={t.duration} />
         ))}
       </div>
+
     </div>
   );
 };
